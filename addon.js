@@ -13,6 +13,9 @@ const manifest = {
 
 const builder = new addonBuilder(manifest);
 
+// -------------------------
+// Anime mappings
+// -------------------------
 const animeMappings = {
     'tt0409591': 'naruto',
     'tt0988824': 'naruto-shippuden',
@@ -24,6 +27,9 @@ const animeMappings = {
     'tt0131179': 'case-closed'
 };
 
+// -------------------------
+// Utility: expand ranges
+// -------------------------
 function expandRanges(rangeStr) {
     const episodes = [];
     const parts = rangeStr.split(',').map(s => s.trim());
@@ -41,24 +47,36 @@ function expandRanges(rangeStr) {
 }
 
 // -------------------------
-// Case Closed season mapping
+// Case Closed / Detective Conan season mapping
 // -------------------------
 const caseClosedMapping = {
-    1: 1,   2: 29,  3: 55,  4: 81,  5: 107,
-    6: 133, 7: 160, 8: 187, 9: 215, 10: 243,
-    11: 270, 12: 298, 13: 325, 14: 353, 15: 381,
-    16: 408, 17: 436, 18: 464, 19: 491, 20: 519,
-    21: 547, 22: 575, 23: 603, 24: 631, 25: 659,
-    26: 687, 27: 715, 28: 743, 29: 771, 30: 799,
-    31: 827, 32: 855, 33: 883, 34: 911, 35: 939,
-    36: 967, 37: 995, 38: 1023, 39: 1051, 40: 1079,
-    41: 1107, 42: 1135, 43: 1163, 44: 1191
+    1: 1, 2: 9, 3: 31, 4: 48, 5: 61,
+    6: 70, 7: 92, 8: 131, 9: 144, 10: 196,
+    11: 227, 12: 326, 13: 382, 14: 482, 15: 517,
+    16: 579, 17: 628, 18: 746, 19: 779, 20: 877,
+    21: 891, 22: 1085
 };
 
+// -------------------------
+// One Piece season mapping
+// -------------------------
+const onePieceMapping = {
+    1: 1, 2: 9, 3: 31, 4: 48, 5: 61,
+    6: 70, 7: 92, 8: 131, 9: 144, 10: 196,
+    11: 227, 12: 326, 13: 382, 14: 482, 15: 517,
+    16: 579, 17: 628, 18: 746, 19: 779, 20: 877,
+    21: 891, 22: 1085
+    // adjust for actual One Piece seasons if different
+};
+
+// -------------------------
+// Convert season:episode to absolute episode
+// -------------------------
 function getAbsoluteEpisode(animeName, season, episodeInSeason) {
     const mappings = {
         'case-closed': caseClosedMapping,
-        'detective-conan': caseClosedMapping
+        'detective-conan': caseClosedMapping,
+        'one-piece': onePieceMapping
     };
     const table = mappings[animeName];
     if (!table || !table[season]) return episodeInSeason; // fallback
