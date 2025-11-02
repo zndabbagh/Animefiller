@@ -2,10 +2,10 @@ const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 
 const manifest = {
     id: 'community.anime.filler.detector',
-    version: '2.0.0',
+    version: '3.0.0',
     name: 'Anime Filler Detector',
-    description: 'Shows filler warnings for anime episodes as subtitle tracks',
-    resources: ['subtitles'],
+    description: 'Shows if anime episodes are filler or canon in the streams list',
+    resources: ['stream'],
     types: ['series'],
     catalogs: [],
     idPrefixes: ['tt', 'kitsu']
@@ -63,25 +63,12 @@ function getFillerData(animeName) {
     return data[animeName] || { filler: [], mixed: [] };
 }
 
-function generateSRT(type, episode) {
-    let text = '';
-    if (type === 'filler') {
-        text = '⚠️ FILLER EPISODE ⚠️\nThis episode is not part of the main story\nYou can skip it without missing plot';
-    } else if (type === 'mixed') {
-        text = '⚡ MIXED CONTENT ⚡\nThis episode contains both\nfiller and canon content';
-    } else {
-        text = '✅ CANON EPISODE ✅\nThis episode is part of\nthe main storyline';
-    }
+builder.defineStreamHandler(async ({ type, id }) => {
+    console.log('Stream request:', { type, id });
     
-    return `1
-00:00:01,000 --> 00:00:10,000
-${text}
-
-`;
-}
-
-builder.defineSubtitlesHandler(async ({ type, id }) => {
-    console.log('Subtitles request:', { type, id });
+    if (type !== 'series') {
+        return { streams: [] };
+    }
     
     const parts = id.split(':');
     const seriesId = parts[0];
@@ -91,35 +78,40 @@ builder.defineSubtitlesHandler(async ({ type, id }) => {
     const animeName = animeMappings[seriesId];
     if (!animeName) {
         console.log('Anime not found:', seriesId);
-        return { subtitles: [] };
+        return { streams: [] };
     }
     
     const fillerData = getFillerData(animeName);
     let episodeType = 'canon';
+    let title = '';
+    let description = '';
     
     if (fillerData.filler.includes(episode)) {
         episodeType = 'filler';
+        title = '🚫 FILLER EPISODE';
+        description = 'This episode is NOT part of the main story. You can skip it without missing any plot.';
     } else if (fillerData.mixed.includes(episode)) {
         episodeType = 'mixed';
+        title = '⚡ MIXED CONTENT';
+        description = 'This episode contains both filler and canon content. Some parts advance the main story.';
+    } else {
+        episodeType = 'canon';
+        title = '✅ CANON EPISODE';
+        description = 'This episode is part of the main storyline. Recommended to watch.';
     }
     
-    const srtContent = generateSRT(episodeType, episode);
-    const base64SRT = Buffer.from(srtContent).toString('base64');
-    
-    const label = episodeType === 'filler' ? '⚠️ FILLER WARNING' : 
-                  episodeType === 'mixed' ? '⚡ MIXED CONTENT' : 
-                  '✅ CANON EPISODE';
-    
     return {
-        subtitles: [{
-            id: `filler-${episodeType}-${episode}`,
-            url: `data:text/srt;base64,${base64SRT}`,
-            lang: 'eng',
-            label: label
+        streams: [{
+            name: 'Anime Filler Detector',
+            title: title,
+            description: description,
+            behaviorHints: {
+                notWebReady: true
+            }
         }]
     };
 });
 
 const port = process.env.PORT || 7000;
 serveHTTP(builder.getInterface(), { port });
-console.log(`Anime Filler Detector (Subtitles) running on port ${port}`);
+console.log(`Anime Filler Detector (Streams) running on port ${port}`);
