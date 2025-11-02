@@ -1,14 +1,14 @@
 const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 
 const manifest = {
-    id: 'org.stremio.animefiller',
+    id: 'org.animefiller',
     version: '1.0.0',
     name: 'Anime Filler Info',
     description: 'Shows if anime episodes are filler or canon',
     resources: ['stream'],
     types: ['series'],
     catalogs: [],
-    idPrefixes: ['tt', 'kitsu']
+    idPrefixes: ['tt']
 };
 
 const builder = new addonBuilder(manifest);
@@ -79,44 +79,62 @@ function getFillerData(animeName) {
 }
 
 builder.defineStreamHandler(async ({ type, id }) => {
+    console.log(`[Anime Filler] Stream request: ${type} - ${id}`);
+    
     if (type !== 'series') {
+        console.log('[Anime Filler] Not a series, skipping');
         return { streams: [] };
     }
     
     const parts = id.split(':');
     if (parts.length < 3) {
+        console.log('[Anime Filler] Invalid ID format');
         return { streams: [] };
     }
     
     const seriesId = parts[0];
+    const season = parseInt(parts[1]);
     const episode = parseInt(parts[2]);
+    
+    console.log(`[Anime Filler] Parsed: Series=${seriesId}, Season=${season}, Episode=${episode}`);
     
     const animeName = animeMappings[seriesId];
     if (!animeName) {
+        console.log(`[Anime Filler] Anime not found for ID: ${seriesId}`);
         return { streams: [] };
     }
     
+    console.log(`[Anime Filler] Found anime: ${animeName}`);
+    
     const fillerData = getFillerData(animeName);
     
-    let streamInfo = {
-        name: 'Anime Filler Info',
-        title: '',
-        url: 'https://example.com'
-    };
+    let displayName = '';
+    let displayTitle = '';
     
     if (fillerData.filler.includes(episode)) {
-        streamInfo.name = '🚫 FILLER EPISODE';
-        streamInfo.title = '⚠️ Not Canon - Safe to Skip';
+        displayName = 'Anime Filler Info';
+        displayTitle = `🚫 FILLER - Not Canon\nSafe to skip`;
+        console.log(`[Anime Filler] Episode ${episode} is FILLER`);
     } else if (fillerData.mixed.includes(episode)) {
-        streamInfo.name = '⚡ MIXED CONTENT';
-        streamInfo.title = '📝 Partial Canon Content';
+        displayName = 'Anime Filler Info';
+        displayTitle = `⚡ MIXED CONTENT\nPartial canon`;
+        console.log(`[Anime Filler] Episode ${episode} is MIXED`);
     } else {
-        streamInfo.name = '✅ CANON EPISODE';
-        streamInfo.title = '📖 Main Storyline';
+        displayName = 'Anime Filler Info';
+        displayTitle = `✅ CANON EPISODE\nMain storyline`;
+        console.log(`[Anime Filler] Episode ${episode} is CANON`);
     }
     
-    return { streams: [streamInfo] };
+    const stream = {
+        name: displayName,
+        title: displayTitle
+    };
+    
+    console.log('[Anime Filler] Returning stream:', stream);
+    
+    return { streams: [stream] };
 });
 
 const port = process.env.PORT || 7000;
 serveHTTP(builder.getInterface(), { port: port });
+console.log(`[Anime Filler] Server running on port ${port}`);
