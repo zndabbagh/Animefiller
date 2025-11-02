@@ -83,10 +83,7 @@ function getFillerData(animeName) {
         }
     };
 
-    return data[animeName];
-}
-;
-    return data[animeName] || { filler: [], mixed: [] };
+     return data[animeName] || { filler: [], mixed: [] };
 }
 
 builder.defineStreamHandler(async ({ type, id }) => {
