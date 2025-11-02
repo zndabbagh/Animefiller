@@ -20,8 +20,8 @@ const animeMappings = {
     'tt1355642': 'bleach',
     'tt5626028': 'my-hero-academia',
     'tt2098220': 'attack-on-titan',
-    'tt0805564': 'detective-conan',
-    'tt0388629': 'case-closed'
+    'tt0131179': 'detective-conan',
+    'tt0131179': 'case-closed'
 };
 
 function expandRanges(rangeStr) {
