@@ -1,13 +1,12 @@
 const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 
 const manifest = {
-    id: 'community.anime.filler.detector',
-    version: '5.0.0',
-    name: 'Anime Filler Guide',
-    description: 'Shows filler warnings in the stream list for anime episodes',
+    id: 'org.stremio.animefiller',
+    version: '1.0.0',
+    name: 'Anime Filler Info',
+    description: 'Shows if anime episodes are filler or canon',
     resources: ['stream'],
     types: ['series'],
-    catalogs: [],
     idPrefixes: ['tt', 'kitsu']
 };
 
@@ -59,11 +58,11 @@ function getFillerData(animeName) {
             mixed: []
         },
         'one-piece': {
-            filler: [50, 51, 52, 53, 54, 61, 98, 99, 101, 102, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 142, 196, 197, 198, 199, 213, 214, 215, 216, 217, 218, 219, 220, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 303, 317, 318, 319, 320, 321, 322, 326, 327, 382, 383, 384, 385, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500],
+            filler: [50, 51, 52, 53, 54, 61, 98, 99, 101, 102, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 142, 196, 197, 198, 199, 213, 214, 215, 216, 217, 218, 219, 220, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 303, 317, 318, 319, 320, 321, 322, 326, 327, 382, 383, 384, 385],
             mixed: []
         },
         'bleach': {
-            filler: [33, 50, 64, 65, 66, 67, 68, 69, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 355],
+            filler: [33, 50, 64, 65, 66, 67, 68, 69, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 355],
             mixed: []
         },
         'my-hero-academia': {
@@ -79,6 +78,8 @@ function getFillerData(animeName) {
 }
 
 builder.defineStreamHandler(async ({ type, id }) => {
+    console.log('Stream request for:', id);
+    
     if (type !== 'series') {
         return { streams: [] };
     }
@@ -89,7 +90,6 @@ builder.defineStreamHandler(async ({ type, id }) => {
     }
     
     const seriesId = parts[0];
-    const season = parseInt(parts[1]);
     const episode = parseInt(parts[2]);
     
     const animeName = animeMappings[seriesId];
@@ -99,33 +99,26 @@ builder.defineStreamHandler(async ({ type, id }) => {
     
     const fillerData = getFillerData(animeName);
     
-    let name = 'Anime Filler Guide';
-    let title = '';
-    let description = '';
+    let streamInfo = {
+        name: 'Anime Filler Info',
+        title: '',
+        url: 'https://example.com'
+    };
     
     if (fillerData.filler.includes(episode)) {
-        name = '🚫 FILLER EPISODE';
-        title = 'NOT CANON';
-        description = 'This episode is filler and not part of the main storyline. You can skip it without missing any important plot developments.';
+        streamInfo.name = '🚫 FILLER EPISODE';
+        streamInfo.title = '⚠️ Not Canon - Safe to Skip';
     } else if (fillerData.mixed.includes(episode)) {
-        name = '⚡ MIXED CONTENT';
-        title = 'PARTIAL CANON';
-        description = 'This episode contains both filler and canon content. Some parts advance the main story while others are filler.';
+        streamInfo.name = '⚡ MIXED CONTENT';
+        streamInfo.title = '📝 Partial Canon Content';
     } else {
-        name = '✅ CANON EPISODE';
-        title = 'MAIN STORYLINE';
-        description = 'This episode is part of the main storyline and important to the plot. Recommended to watch.';
+        streamInfo.name = '✅ CANON EPISODE';
+        streamInfo.title = '📖 Main Storyline';
     }
     
-    return {
-        streams: [{
-            name: name,
-            title: title,
-            description: description
-        }]
-    };
+    return { streams: [streamInfo] };
 });
 
 const port = process.env.PORT || 7000;
 serveHTTP(builder.getInterface(), { port });
-console.log(`Anime Filler Guide (Stream Provider) running on port ${port}`);
+console.log(`Anime Filler Info addon running on port ${port}`);
