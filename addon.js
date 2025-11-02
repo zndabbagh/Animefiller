@@ -79,8 +79,6 @@ function getFillerData(animeName) {
 }
 
 builder.defineStreamHandler(async ({ type, id }) => {
-    console.log('Stream request for:', id);
-    
     if (type !== 'series') {
         return { streams: [] };
     }
@@ -121,5 +119,4 @@ builder.defineStreamHandler(async ({ type, id }) => {
 });
 
 const port = process.env.PORT || 7000;
-serveHTTP(builder.getInterface(), { port });
-console.log(`Anime Filler Info addon running on port ${port}`);
+serveHTTP(builder.getInterface(), { port: port });
