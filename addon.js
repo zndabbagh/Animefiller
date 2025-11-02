@@ -7,6 +7,7 @@ const manifest = {
     description: 'Shows if anime episodes are filler or canon',
     resources: ['stream'],
     types: ['series'],
+    catalogs: [],
     idPrefixes: ['tt', 'kitsu']
 };
 
