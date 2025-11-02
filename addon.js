@@ -2,7 +2,7 @@ const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 
 const manifest = {
     id: 'org.animefiller',
-    version: '1.0.0',
+    version: '2.0.0',
     name: 'Anime Filler Info',
     description: 'Shows if anime episodes are filler or canon',
     resources: ['stream'],
