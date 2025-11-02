@@ -5,7 +5,7 @@ const manifest = {
     version: '1.0.0',
     name: 'Anime Filler Detector',
     description: 'Marks filler episodes for anime series using community data',
-    resources: ['meta', 'catalog'],
+    resources: ['meta'],
     types: ['series'],
     catalogs: [],
     idPrefixes: ['tt', 'kitsu']
