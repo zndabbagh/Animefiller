@@ -16,7 +16,7 @@ const builder = new addonBuilder(manifest);
 const animeMappings = {
     'tt0409591': 'naruto',
     'tt0988824': 'naruto-shippuden',
-    'tt2560140': 'one-piece',
+    'tt0388629': 'one-piece',
     'tt0434665': 'bleach',
     'tt5626028': 'my-hero-academia',
     'tt2098220': 'attack-on-titan',
