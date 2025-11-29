@@ -17,7 +17,7 @@ const animeMappings = {
     'tt0409591': 'naruto',
     'tt0988824': 'naruto-shippuden',
     'tt2560140': 'one-piece',
-    'tt1355642': 'bleach',
+    'tt0434665': 'bleach',
     'tt5626028': 'my-hero-academia',
     'tt2098220': 'attack-on-titan',
     'tt0131179': 'detective-conan',
